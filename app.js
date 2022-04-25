@@ -5,12 +5,6 @@ const app = express();
 const puppeteer = require('puppeteer');
 const PORT = process.env.PORT;
 
-function LoadMore(page , selector){
-   const moreButton = page.$(selector);
-   if(moreButton){
-       moreButton.click()
-   }
-}
 
 
 async function start(){
@@ -21,7 +15,7 @@ async function start(){
         if(moreButton){
             console.log("more")
            await moreButton.click();
-           await page.waitFor(selector,{timeout:3000})
+           await page.waitFor(selector,{timeout:3000}).catch(console.log("timeout"))
            await LoadMore(page,selector)
         }
      }
