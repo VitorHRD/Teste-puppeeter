@@ -1,5 +1,6 @@
 
 require('dotenv').config();
+const { text } = require('express');
 const express = require('express');
 const app = express();
 const puppeteer = require('puppeteer');
@@ -46,23 +47,28 @@ async function start() {
    );
    await page.goto(process.env.URL);
    await LoadMore(page, 'svg[aria-label="Carregar mais comentários"]');
-   const comments = await getComments(page, ".C4VMK h3 ");
-   const counted = count(comments) 
-   const sorted = sort(counted)
-   sorted.forEach(comment => [console.log(comment)])
-
+   const comments = await getComments(page, ".C4VMK ");
+   console.log(comments)
+   const sorted = sort(comments)
+   const counted = count(comments)
+   const winner = counted.find((comment)=>{return comment.id == sorted})
+   console.log(winner)
+   await browser.close()
 }
 
 start()
 
-function count(comments){
-   const count = {}
-   comments.forEach(comment=>{count[comment] =(count[comment] || 0) + 1})
-   return count
+
+
+function sort (array){
+   let length = Math.floor(Math.random() * array.length)
+
+   return length
 }
 
-function sort (counted){
-   const entries = Object.entries(counted)
-   const sorted = entries.sort((a , b )=> b[1] - a[1])
-   return sorted
+function count(comments){
+   const count = [];
+   let i = 1 ;
+   comments.forEach(comment=>{count.push({text: comment , id : i++ })})
+   return count
 }
