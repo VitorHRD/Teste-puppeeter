@@ -1,6 +1,6 @@
 
 require('dotenv').config();
-const { text } = require('express');
+
 const express = require('express');
 const app = express();
 const puppeteer = require('puppeteer');
@@ -62,12 +62,16 @@ async function start() {
    
    const sorted = sort(autorComments)
    const counted = count(autorComments , textComments , imgComments)
-   const winner = counted.find((comment) => { return comment.id == sorted })
-   console.log(winner)
+   var winner = counted.find((comment) => { return comment.id == sorted })
    await browser.close()
+   return winner
+   
+
+  
 }
 
-start()
+  start().then((u)=>{console.log(u)})
+
 
 
 
