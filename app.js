@@ -13,8 +13,8 @@ async function start() {
       if (moreButton) {
          console.log("more")
          await page.waitForSelector(selector)
-         await moreButton.click()  
-         await page.waitForSelector(selector , {timeout : 3000}).catch(()=>{
+         await moreButton.click()
+         await page.waitForSelector(selector, { timeout: 3000 }).catch(() => {
             console.log("timeout")
          })
          await LoadMore(page, selector);
@@ -27,11 +27,15 @@ async function start() {
       );
       return comments;
    }
+   async function getSrc(page, selector) {
+      const comments = await page.$$eval(selector, (imgs) =>
+         imgs.map((img) => img.getAttribute('src'))
+      );
+      return comments;
+   }
 
-   const browser = await puppeteer.launch({
-      headless: false,
-      defaultViewport: null,
-    });
+   const browser = await puppeteer.launch({ headless: false,
+      defaultViewport: null,});
    const page = await browser.newPage();
    await page.goto("https://www.instagram.com/accounts/login/");
    await page.waitForSelector('input[name="username"]');
@@ -47,11 +51,18 @@ async function start() {
    );
    await page.goto(process.env.URL);
    await LoadMore(page, 'svg[aria-label="Carregar mais comentários"]');
-   const comments = await getComments(page, ".C4VMK ");
-   console.log(comments)
-   const sorted = sort(comments)
-   const counted = count(comments)
-   const winner = counted.find((comment)=>{return comment.id == sorted})
+
+   const autorComments = await getComments(page, ".C4VMK h3 ");
+   const textComments = await getComments(page, ".C4VMK div.MOdxS ");
+   const imgComments = await getSrc(page, ".C7I1f img[src]");
+   
+
+
+
+   
+   const sorted = sort(autorComments)
+   const counted = count(autorComments , textComments , imgComments)
+   const winner = counted.find((comment) => { return comment.id == sorted })
    console.log(winner)
    await browser.close()
 }
@@ -60,15 +71,15 @@ start()
 
 
 
-function sort (array){
+function sort(array) {
    let length = Math.floor(Math.random() * array.length)
 
    return length
 }
 
-function count(comments){
+function count(autorArray , commentsArray , autorImg) {
    const count = [];
-   let i = 1 ;
-   comments.forEach(comment=>{count.push({text: comment , id : i++ })})
+   let id = 0;
+   autorArray.forEach(autor => { count.push({ id: id++ ,autorImg:autorImg[id], autor:autor, text:commentsArray[id] }) })
    return count
 }
