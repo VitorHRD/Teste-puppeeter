@@ -63,14 +63,20 @@ async function start() {
    const sorted = sort(autorComments)
    const counted = count(autorComments , textComments , imgComments)
    var winner = counted.find((comment) => { return comment.id == sorted })
+
+   if(winner === undefined){
+    await browser.close()
+    return start()
+   }
+   else{
    await browser.close()
    return winner
+}
    
 
   
 }
-
-  start().then((u)=>{console.log(u)})
+start().then((winner)=>{console.log(winner)})
 
 
 
